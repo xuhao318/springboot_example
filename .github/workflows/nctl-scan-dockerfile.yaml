@@ -18,12 +18,16 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
-      - name: Check out additional repository code
+      - name: Check out main repository code
+        uses: actions/checkout@v4
+
+      - name: Check out go-nctl repository code
         uses: actions/checkout@v4
         with:
           repository: nirmata/go-nctl
           ref: publish-report
           token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
+          path: go-nctl
       
       - name: Set up Go
         uses: actions/setup-go@v2
@@ -33,15 +37,17 @@ jobs:
       - run: git config --global url.https://$GH_DEP_USERNAME:$GH_DEP_PAT@github.com/.insteadOf https://github.com/
 
       - name: Build go-nctl
-        run: make linux
+        run: |
+          cd  go-nctl
+          make linux
 
       - name: make nctl executable
-        run: chmod +x ./releases/linux/nctl
+        run: chmod +x ./go-nctl/releases/linux/nctl
 
       - name: Check nctl version
-        run: ./releases/linux/nctl version
+        run: ./go-nctl/releases/linux/nctl version
 
       - name: NCTL Scan - Dockerfile
-        run: ./releases/linux/nctl analyze git-repo --policies ./policy/ --publish --debug
+        run: ./go-nctl/releases/linux/nctl analyze git-repo --policies ./policy/ --publish --debug
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

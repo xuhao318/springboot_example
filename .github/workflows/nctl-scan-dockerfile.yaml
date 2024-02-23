@@ -17,7 +17,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
-          repository: nirmata/go-nctl
+          repository: nirmata/go-nctl@publish-report
           token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
       
       - name: Set up Go
@@ -27,6 +27,7 @@ jobs:
 
       - name: Build go-nctl
         run: |
+          ls -l
           cd go-nctl
           make linux
 

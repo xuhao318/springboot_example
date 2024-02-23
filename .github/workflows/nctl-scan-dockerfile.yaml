@@ -35,10 +35,13 @@ jobs:
       - name: Build go-nctl
         run: make linux
 
+      - name: make nctl executable
+        run: chmod +x ./releases/linux/nctl
+
       - name: Check nctl version
-        run: nctl version
+        run: ./releases/linux/nctl version
 
       - name: NCTL Scan - Dockerfile
-        run: nctl analyze git-repo --policies ./policy/ --publish --debug
+        run: ./releases/linux/nctl analyze git-repo --policies ./policy/ --publish --debug
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

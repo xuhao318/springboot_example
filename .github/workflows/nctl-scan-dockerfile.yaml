@@ -14,10 +14,6 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
-
-      - name: Checkout Main Repository
-        uses: actions/checkout@v2
-
       - name: Check out additional repository code
         uses: actions/checkout@v4
         with:
@@ -31,10 +27,7 @@ jobs:
           go-version: '1.21'
 
       - name: Build go-nctl
-        run: |
-          ls -l
-          cd go-nctl
-          make linux
+        run: make linux
 
       - name: Check nctl version
         run: nctl version

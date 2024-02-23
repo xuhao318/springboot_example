@@ -16,16 +16,24 @@ jobs:
 
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          repository: nirmata/go-nctl
+          token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
+      
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
 
-      - name: nctl-scan-installer
-        uses: nirmata/action-install-nctl-scan@publish-report
-
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: Build go-nctl
+        run: |
+          cd go-nctl
+          make linux
 
       - name: Check nctl version
         run: nctl version
 
       - name: NCTL Scan - Dockerfile
-        run: nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
+        run: nctl analyze git-repo --policies ./policy/ --publish --debug
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

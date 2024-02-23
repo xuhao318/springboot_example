@@ -14,10 +14,15 @@ jobs:
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
-      - name: Check out repository code
+
+      - name: Checkout Main Repository
+        uses: actions/checkout@v2
+
+      - name: Check out additional repository code
         uses: actions/checkout@v4
         with:
-          repository: nirmata/go-nctl@publish-report
+          repository: nirmata/go-nctl
+          ref: publish-report
           token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
       
       - name: Set up Go

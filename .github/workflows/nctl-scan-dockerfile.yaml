@@ -8,24 +8,46 @@ on:
     branches:
       - "main"
 
+env:
+  GH_DEP_USERNAME: ${{secrets.GH_USERNAME}}
+  GH_DEP_PAT: ${{secrets.GH_TOKEN}}
+
 jobs:
   NCTL-Scan-Dockerfile:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
 
-      - name: Check out repository code
+      - name: Check out main repository code
         uses: actions/checkout@v4
 
-      - name: nctl-scan-installer
-        uses: nirmata/action-install-nctl-scan@publish-report
+      - name: Check out go-nctl repository code
+        uses: actions/checkout@v4
+        with:
+          repository: nirmata/go-nctl
+          ref: publish-report
+          token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
+          path: go-nctl
+      
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
 
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: git config --global url.https://$GH_DEP_USERNAME:$GH_DEP_PAT@github.com/.insteadOf https://github.com/
+
+      - name: Build go-nctl
+        run: |
+          cd  go-nctl
+          make linux
+
+      - name: make nctl executable
+        run: chmod +x ./go-nctl/releases/linux/nctl
 
       - name: Check nctl version
-        run: nctl version
+        run: ./go-nctl/releases/linux/nctl version
 
       - name: NCTL Scan - Dockerfile
-        run: nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
+        run: ./go-nctl/releases/linux/nctl analyze git-repo --policies ./policy/ --publish --debug
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

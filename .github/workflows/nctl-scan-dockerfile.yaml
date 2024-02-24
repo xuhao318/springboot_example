@@ -20,8 +20,6 @@ jobs:
 
       - name: Check out main repository code
         uses: actions/checkout@v4
-        with:
-          ref: nctl_test
 
       - name: Check out go-nctl repository code
         uses: actions/checkout@v4

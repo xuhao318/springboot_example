@@ -48,6 +48,6 @@ jobs:
         run: ./go-nctl/releases/linux/nctl version
 
       - name: NCTL Scan - Dockerfile
-        run: ./go-nctl/releases/linux/nctl analyze git-repo --policies ./policy/ --publish --debug
+        run: ./go-nctl/releases/linux/nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

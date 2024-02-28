@@ -51,6 +51,11 @@ jobs:
           log_info "Making nctl executable..."
           chmod +x nctl
 
+          log_info "list directory"
+          ls -l
+
+          log_info "check nctl version"
+
           log_info "Installation complete!"
 
       - name: NCTL Scan - Dockerfile

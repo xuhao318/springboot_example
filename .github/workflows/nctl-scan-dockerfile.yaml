@@ -51,13 +51,9 @@ jobs:
           log_info "Making nctl executable..."
           chmod +x nctl
 
-          log_info "list directory"
-          ls -l
-
-          log_info "check nctl version"
-
-          log_info "Installation complete!"
-
+      - name: echo the NIRMATA_API_KEY
+        run: echo $NIRMATA_API_KEY
+        
       - name: NCTL Scan - Dockerfile
         run: ./nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
   

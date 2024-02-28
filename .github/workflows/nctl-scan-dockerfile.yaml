@@ -12,6 +12,7 @@ env:
   GH_DEP_USERNAME: ${{secrets.GH_USERNAME}}
   GH_DEP_PAT: ${{secrets.GH_TOKEN}}
 
+
 jobs:
   NCTL-Scan-Dockerfile:
     runs-on: ubuntu-latest
@@ -21,33 +22,43 @@ jobs:
       - name: Check out main repository code
         uses: actions/checkout@v4
 
-      - name: Check out go-nctl repository code
-        uses: actions/checkout@v4
-        with:
-          repository: nirmata/go-nctl
-          ref: publish-report
-          token: ${{ secrets.GH_TOKEN }} # Use the stored secret here
-          path: go-nctl
-      
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: '1.21'
-
-      - run: git config --global url.https://$GH_DEP_USERNAME:$GH_DEP_PAT@github.com/.insteadOf https://github.com/
-
-      - name: Build go-nctl
+      - name: Download and Install nctl
+        shell: bash
         run: |
-          cd  go-nctl
-          make linux
+          #!/bin/bash
 
-      - name: make nctl executable
-        run: chmod +x ./go-nctl/releases/linux/nctl
+          shopt -s expand_aliases
 
-      - name: Check nctl version
-        run: ./go-nctl/releases/linux/nctl version
+          if [ -z "$NO_COLOR" ]; then
+            alias log_info="echo -e \"\033[1;32mINFO\033[0m:\""
+            alias log_error="echo -e \"\033[1;31mERROR\033[0m:\""
+          else
+            alias log_info="echo \"INFO:\""
+            alias log_error="echo \"ERROR:\""
+          fi
+
+          set -e
+
+          # Determine the download URL based on the release version
+          download_url="https://nirmata-downloads.s3.us-east-2.amazonaws.com/nctl/nctl_0.1-publish-report/nctl_0.1-publish-report_linux_64-bit.zip"
+
+          log_info "Downloading nctl version 0.1-publish-report from ${download_url}"
+          curl -L -o nctl.zip $download_url
+
+          log_info "Unzipping nctl..."
+          unzip -q nctl.zip
+
+          log_info "Making nctl executable..."
+          chmod +x nctl
+
+          log_info "list directory"
+          ls -l
+
+          log_info "check nctl version"
+
+          log_info "Installation complete!"
 
       - name: NCTL Scan - Dockerfile
-        run: ./go-nctl/releases/linux/nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
+        run: ./nctl analyze git-repo --policies ./policy/ --publish --publish-url https://devtest2.nirmata.co/policies/api/policyReportResult
   
       - run: echo "🍏 This job's status is ${{ job.status }}."

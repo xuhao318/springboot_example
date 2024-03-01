@@ -1,3 +1,5 @@
+FROM busybox
+
 ARG BUILD_PLATFORM="linux/amd64"
 ARG BUILDER_IMAGE="golang:1.20.6-alpine3.18"
 
@@ -12,7 +14,14 @@ ARG SIGNER_BINARY_FILE="notation-aws-signer-plugin.zip"
 RUN apk update && \
     apk add sudo wget unzip && \
     wget -O ${SIGNER_BINARY_FILE} ${SIGNER_BINARY_LINK} && \
-    unzip -o ${SIGNER_BINARY_FILE}
+    unzip -o ${SIGNER_BINARY_FILE} 
+
+RUN apt-get update && \
+     apt-get install -y --allow-unauthenticated yamllint
+
+RUN apk update && \
+    apk add --no-cache --allow-untrusted curl
+
 
 # Build Go binary
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-w -s" -o kyverno-notation-aws .

@@ -1,0 +1,28 @@
+name: NCTL Scan Dockerfile in docker Demo
+run-name: ${{ github.actor }} has triggered Scan Action 🚀
+on:
+  pull_request:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+
+env:
+  NIRMATA_API_KEY: ${{secrets.NIRMATA_API_KEY}}
+  NIRMATA_URL: https://devtest2.nirmata.co
+
+jobs:
+  NCTL-Scan-Dockerfile-in-docker:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v3
+      
+    - name: Set up Docker
+      uses: docker/setup-buildx-action@v1
+
+    - name: Run the Docker command
+      run: |
+        docker run -e NIRMATA_URL=${{ secrets.NIRMATA_URL }} -e NIRMATA_API_KEY=${{ secrets.NIRMATA_API_KEY }} -v ${{ github.workspace }}:/work eddycharly/nctl scan git-repo /work --policies /work/policy --publish
+      shell: bash

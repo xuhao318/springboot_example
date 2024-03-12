@@ -17,11 +17,16 @@ spec:
   rules:
     - name: check-awsvpc-network-mode
       match:
-        any:
-        - (planned_values.root_module.resources[?type=='aws_ecs_task_definition'] | length(@) > `0`): true
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (resource.aws_ecs_task_definition && length(resource.aws_ecs_task_definition) > `0`): true
       assert:
         all:
         - message: ECS services and tasks are required to use awsvpc network mode.
           check:
-            ~.(planned_values.root_module.resources[?type=='aws_ecs_task_definition'].values):
-                network_mode: awsvpc
+            resource:
+              ~.(aws_ecs_task_definition):
+                ~.(@):
+                  network_mode: awsvpc

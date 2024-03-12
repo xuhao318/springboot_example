@@ -13,14 +13,17 @@ spec:
   rules:
     - name: container-insights
       match:
-        any:
-        - (planned_values.root_module.resources[?type=='aws_ecs_cluster'] | length(@) > `0`): true
+        all:
+        - ($analyzer):
+            resource:
+              type: terraform-config
+        - (resource.aws_ecs_cluster && length(resource.aws_ecs_cluster) > `0`): true
       assert:
         all:
         - message: ECS container insights are not enabled
           check:
-            ~.(planned_values.root_module.resources[?type == 'aws_ecs_cluster']):
-                values:
-                    (!setting): false
-                    ~.(setting || `[]`):
-                        value: enabled
+            resource:
+              ~.(aws_ecs_cluster):
+                ~.(@):
+                  (setting[?name == 'containerInsights']):
+                    - value: enabled

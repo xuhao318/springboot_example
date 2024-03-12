@@ -1,0 +1,27 @@
+name: NCTL Scan Dockerfile in docker Demo
+run-name: ${{ github.actor }} has triggered Scan Action 🚀
+on:
+  pull_request:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+
+env:
+  NIRMATA_API_KEY: ${{secrets.NIRMATA_API_KEY}}
+
+
+jobs:
+  NCTL-Scan-Dockerfile-in-docker:
+    runs-on: ubuntu-latest
+    container:
+      image: eddycharly/nctl:1c92e58acd9b711aa0602981f108ad46c1f11f44
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - name: Check out main repository code
+        uses: actions/checkout@v4
+
+      - name: NCTL Scan - Dockerfile
+        run: ./nctl analyze git-repo --policies ./policy/ --publish

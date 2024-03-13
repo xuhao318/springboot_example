@@ -24,5 +24,5 @@ jobs:
 
     - name: Run the Docker command
       run: |
-        docker run -e NIRMATA_URL=${{ secrets.NIRMATA_URL }} -e NIRMATA_API_KEY=${{ secrets.NIRMATA_API_KEY }} -v ${{ github.workspace }}:/work eddycharly/nctl scan git-repo /work --policies /work/policy --publish
+        docker run -e NIRMATA_URL=${{ secrets.NIRMATA_URL }} -e NIRMATA_API_KEY=${{ secrets.NIRMATA_API_KEY }} -v ${{ PWD }}:/work --workdir /work eddycharly/nctl scan git-repo --policies /work/policy --publish
       shell: bash
